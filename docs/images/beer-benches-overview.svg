@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">Beer benches seating plan overview</title>
+  <desc id="desc">Stylized rows of beer benches and tables with green seats, arranged as a seating plan.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5eee0"/><stop offset="1" stop-color="#e5efe7"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#23352c" flood-opacity=".16"/></filter>
+  </defs>
+  <rect width="1200" height="560" rx="36" fill="url(#bg)"/>
+  <g fill="#b84924" opacity=".15"><circle cx="97" cy="91" r="44"/><circle cx="1122" cy="473" r="78"/></g>
+  <g transform="translate(70 66)" filter="url(#shadow)">
+    <rect width="715" height="428" rx="26" fill="#fffdf8"/>
+    <text x="40" y="59" font-family="Georgia,serif" font-size="34" font-weight="700" fill="#1d2a25">Your seating plan, at a glance.</text>
+    <text x="40" y="91" font-family="system-ui,sans-serif" font-size="18" fill="#637068">Tables, benches and every individual seat.</text>
+    <g transform="translate(52 128)">
+      <g fill="#d7c29b" stroke="#6f4e37" stroke-width="3"><rect x="44" y="18" width="108" height="20" rx="7"/><rect x="44" y="68" width="108" height="20" rx="7"/><rect x="238" y="18" width="108" height="20" rx="7"/><rect x="238" y="68" width="108" height="20" rx="7"/><rect x="432" y="18" width="108" height="20" rx="7"/><rect x="432" y="68" width="108" height="20" rx="7"/><rect x="44" y="168" width="108" height="20" rx="7"/><rect x="44" y="218" width="108" height="20" rx="7"/><rect x="238" y="168" width="108" height="20" rx="7"/><rect x="238" y="218" width="108" height="20" rx="7"/><rect x="432" y="168" width="108" height="20" rx="7"/><rect x="432" y="218" width="108" height="20" rx="7"/></g>
+      <g fill="#266a55" stroke="#fffdf8" stroke-width="3"><circle cx="57" cy="53" r="12"/><circle cx="86" cy="53" r="12"/><circle cx="115" cy="53" r="12"/><circle cx="144" cy="53" r="12"/><circle cx="251" cy="53" r="12"/><circle cx="280" cy="53" r="12"/><circle cx="309" cy="53" r="12"/><circle cx="338" cy="53" r="12"/><circle cx="445" cy="53" r="12"/><circle cx="474" cy="53" r="12"/><circle cx="503" cy="53" r="12"/><circle cx="532" cy="53" r="12"/><circle cx="57" cy="203" r="12"/><circle cx="86" cy="203" r="12"/><circle cx="115" cy="203" r="12"/><circle cx="144" cy="203" r="12"/><circle cx="251" cy="203" r="12"/><circle cx="280" cy="203" r="12"/><circle cx="309" cy="203" r="12"/><circle cx="338" cy="203" r="12"/><circle cx="445" cy="203" r="12"/><circle cx="474" cy="203" r="12"/><circle cx="503" cy="203" r="12"/><circle cx="532" cy="203" r="12"/></g>
+      <g font-family="system-ui,sans-serif" font-size="15" font-weight="700" fill="#473225"><text x="98" y="59">01</text><text x="292" y="59">02</text><text x="486" y="59">03</text><text x="98" y="209">04</text><text x="292" y="209">05</text><text x="486" y="209">06</text></g>
+    </g>
+  </g>
+  <g transform="translate(846 124)">
+    <rect width="274" height="310" rx="25" fill="#1d2a25"/>
+    <text x="30" y="54" font-family="system-ui,sans-serif" font-size="15" font-weight="700" letter-spacing="2" fill="#d7c29b">PRETIX READY</text>
+    <path d="M31 91h212" stroke="#637068" stroke-width="2"/>
+    <text x="30" y="134" font-family="Georgia,serif" font-size="31" font-weight="700" fill="#fffdf8">Configure.</text>
+    <text x="30" y="173" font-family="Georgia,serif" font-size="31" font-weight="700" fill="#fffdf8">Preview.</text>
+    <text x="30" y="212" font-family="Georgia,serif" font-size="31" font-weight="700" fill="#fffdf8">Export.</text>
+    <circle cx="42" cy="258" r="9" fill="#b84924"/><text x="62" y="264" font-family="system-ui,sans-serif" font-size="16" fill="#e5efe7">JSON seating plan</text>
+  </g>
+</svg>
