@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beer Benches Seating</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">pretix seating-plan generator</p>
+      <h1>Beer benches, clearly arranged.</h1>
+      <p class="intro">Configure your layout, inspect every table visually, then download a pretix-compatible JSON plan.</p>
+    </header>
+
+    <section class="workspace">
+      <form id="config-form" class="panel" autocomplete="off">
+        <div class="panel-title"><h2>Layout</h2><span id="seat-total">960 seats</span></div>
+        <div class="grid">
+          <label>Seats / table<input name="seats_per_table" type="number" min="2" step="2" value="8"></label>
+          <label>Tables wide<input name="num_tables_x" type="number" min="1" value="8"></label>
+          <label>Tables deep<input name="num_tables_y" type="number" min="1" value="15"></label>
+          <label>Seat spacing, across<input name="gap_seats_x" type="number" min="0" value="60"></label>
+          <label>Seat spacing, along<input name="gap_seats_y" type="number" min="0" value="25"></label>
+          <label>Seat radius<input name="seat_radius" type="number" min="0" value="10"></label>
+          <label>Table gap pattern, across<input name="gap_tables_x" value="20, 45"></label>
+          <label>Table gap pattern, deep<input name="gap_tables_y" value="5, 5, 5, 45"></label>
+          <label>Table prefix<input name="table_name" value="Tisch"></label>
+          <label>Seat prefix<input name="seat_name" value="Platz"></label>
+          <label>Plan margin<input name="margin" type="number" min="0" value="40"></label>
+        </div>
+        <div class="actions">
+          <button type="submit">Update preview</button>
+          <button id="download" type="button" class="secondary">Download pretix JSON</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+
+      <section class="preview panel">
+        <div class="panel-title"><h2>Preview</h2><span id="plan-size">—</span></div>
+        <div id="canvas" aria-label="Seating plan preview"></div>
+        <p class="hint">Scroll to zoom. Drag to pan. Select a table to inspect its seats.</p>
+      </section>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

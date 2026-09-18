@@ -1,0 +1,24 @@
+services:
+  app:
+    image: ${APP_IMAGE:?APP_IMAGE must be set to a registry image tag}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${ROUTER_NAME}.rule=Host(`${APP_HOST}`)
+      - traefik.http.routers.${ROUTER_NAME}.entrypoints=websecure
+      - traefik.http.routers.${ROUTER_NAME}.tls=true
+      - traefik.http.services.${ROUTER_NAME}.loadbalancer.server.port=8000
+      - traefik.http.services.${ROUTER_NAME}.loadbalancer.healthcheck.path=/healthz
+      - traefik.http.services.${ROUTER_NAME}.loadbalancer.healthcheck.interval=10s
+
+networks:
+  proxy:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}
