@@ -31,15 +31,34 @@ function updateNumberingOptions() {
 }
 
 function saveSettings() {
-  try { localStorage.setItem(storageKey, JSON.stringify(Object.fromEntries(new FormData(form)))); } catch (_) { /* Storage can be unavailable in private contexts. */ }
+  try { localStorage.setItem(storageKey, JSON.stringify(settingsFromForm())); } catch (_) { /* Storage can be unavailable in private contexts. */ }
+}
+
+function settingsFromForm() { return Object.fromEntries(new FormData(form)); }
+
+function applySettings(settings) {
+  if (!settings || typeof settings !== 'object' || Array.isArray(settings)) throw new Error('The settings file is invalid.');
+  for (const [name, value] of Object.entries(settings)) {
+    const field = form.elements[name];
+    if (!field || !['string', 'number'].includes(typeof value)) continue;
+    if (field.tagName === 'SELECT' && ![...field.options].some(option => option.value === String(value))) continue;
+    field.value = String(value);
+  }
+  updateNumberingOptions();
+  saveSettings();
+  updateAdvancedResets();
 }
 
 function restoreSettings() {
-  try {
-    const settings = JSON.parse(localStorage.getItem(storageKey));
-    if (!settings || typeof settings !== 'object') return;
-    for (const [name, value] of Object.entries(settings)) if (form.elements[name] && typeof value === 'string') form.elements[name].value = value;
-  } catch (_) { /* Ignore invalid or unavailable saved settings. */ }
+  try { applySettings(JSON.parse(localStorage.getItem(storageKey))); } catch (_) { /* Ignore invalid or unavailable saved settings. */ }
+}
+
+function downloadFile(content, filename) {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(content, null, 2)], { type:'application/json' }));
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 function updateAdvancedResets() {
@@ -118,8 +137,28 @@ document.querySelector('#reset').addEventListener('click', () => {
   updateAdvancedResets();
   scheduleGenerate();
 });
+document.querySelector('#save-settings').addEventListener('click', () => {
+  let settings = settingsFromForm();
+  try { settings = JSON.parse(localStorage.getItem(storageKey)) || settings; } catch (_) { /* Export the live form if storage is unavailable. */ }
+  downloadFile({ format: 'beer-benches-seating-settings', version: 1, settings }, 'beer-benches-settings.json');
+});
+const settingsFile = document.querySelector('#settings-file');
+document.querySelector('#load-settings').addEventListener('click', () => settingsFile.click());
+settingsFile.addEventListener('change', async () => {
+  const [file] = settingsFile.files;
+  if (!file) return;
+  try {
+    const imported = JSON.parse(await file.text());
+    applySettings(imported.settings || imported);
+    scheduleGenerate();
+  } catch (err) {
+    error.textContent = err.message || 'The settings file could not be loaded.';
+  } finally {
+    settingsFile.value = '';
+  }
+});
 document.querySelector('#download').addEventListener('click', async () => {
-  try { if (!plan) await generate(); const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(plan, null, 2)], { type:'application/json' })); link.download = 'beer-benches-seating.json'; link.click(); URL.revokeObjectURL(link.href); } catch (err) { error.textContent = err.message; }
+  try { if (!plan) await generate(); downloadFile(plan, 'beer-benches-seating.json'); } catch (err) { error.textContent = err.message; }
 });
 restoreSettings();
 updateNumberingOptions();
