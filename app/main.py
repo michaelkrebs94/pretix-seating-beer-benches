@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -28,6 +29,8 @@ class SeatingRequest(BaseModel):
     table_name: str = Field(default="Tisch", min_length=1, max_length=80)
     seat_name: str = Field(default="Platz", min_length=1, max_length=80)
     margin: int = Field(default=40, ge=0)
+    primary_numbering: Literal["left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top"] = "left-to-right"
+    secondary_numbering: Literal["left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top"] = "top-to-bottom"
 
     @field_validator("seats_per_table")
     @classmethod
@@ -41,6 +44,15 @@ class SeatingRequest(BaseModel):
     def gaps_must_not_be_empty_or_negative(cls, value: list[int]) -> list[int]:
         if not value or any(gap < 0 for gap in value):
             raise ValueError("must contain non-negative values")
+        return value
+
+    @field_validator("secondary_numbering")
+    @classmethod
+    def numbering_directions_must_be_perpendicular(cls, value: str, info) -> str:
+        primary_is_horizontal = info.data.get("primary_numbering") in {"left-to-right", "right-to-left"}
+        secondary_is_horizontal = value in {"left-to-right", "right-to-left"}
+        if primary_is_horizontal == secondary_is_horizontal:
+            raise ValueError("must be perpendicular to the primary table numbering direction")
         return value
 
     def as_config(self) -> SeatingConfig:

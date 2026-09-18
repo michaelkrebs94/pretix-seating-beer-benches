@@ -16,6 +16,17 @@ function payload() {
 
 function seatCount(data) { return data.seats_per_table * data.num_tables_x * data.num_tables_y; }
 
+function updateNumberingOptions() {
+  const primary = form.elements.primary_numbering;
+  const secondary = form.elements.secondary_numbering;
+  const primaryIsHorizontal = ['left-to-right', 'right-to-left'].includes(primary.value);
+  for (const option of secondary.options) {
+    const secondaryIsHorizontal = ['left-to-right', 'right-to-left'].includes(option.value);
+    option.disabled = primaryIsHorizontal === secondaryIsHorizontal;
+  }
+  if (secondary.selectedOptions[0].disabled) secondary.value = primaryIsHorizontal ? 'top-to-bottom' : 'left-to-right';
+}
+
 function render(data) {
   const zone = data.zones[0];
   const { width, height } = data.size;
@@ -58,7 +69,9 @@ async function generate() {
 }
 
 form.addEventListener('submit', async event => { event.preventDefault(); try { await generate(); } catch (err) { error.textContent = err.message; } });
+form.elements.primary_numbering.addEventListener('change', updateNumberingOptions);
 document.querySelector('#download').addEventListener('click', async () => {
   try { if (!plan) await generate(); const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(plan, null, 2)], { type:'application/json' })); link.download = 'beer-benches-seating.json'; link.click(); URL.revokeObjectURL(link.href); } catch (err) { error.textContent = err.message; }
 });
+updateNumberingOptions();
 generate().catch(err => { error.textContent = err.message; });

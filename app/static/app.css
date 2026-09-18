@@ -13,8 +13,11 @@ h2 { margin:0; font-size:1.08rem; }
 .panel-title span,.hint { color:var(--muted); font-size:.85rem; }
 .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
 label { color:#425148; display:grid; gap:6px; font-size:.75rem; font-weight:700; }
-input { width:100%; min-width:0; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:9px; padding:9px 10px; font:inherit; font-weight:500; }
-input:focus { border-color:var(--accent); outline:3px solid #b8492420; }
+input,select { width:100%; min-width:0; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:9px; padding:9px 10px; font:inherit; font-weight:500; }
+input:focus,select:focus { border-color:var(--accent); outline:3px solid #b8492420; }
+.advanced { margin-top:16px; border-top:1px solid var(--line); padding-top:14px; }
+.advanced summary { cursor:pointer; color:#425148; font-size:.8rem; font-weight:800; }
+.advanced-grid { margin-top:14px; }
 .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:20px; }
 button { border:0; border-radius:9px; background:var(--accent); color:white; cursor:pointer; font:inherit; font-weight:750; padding:10px 13px; }
 button.secondary { background:#edf1eb; color:var(--ink); }
