@@ -18,6 +18,9 @@ input:focus,select:focus { border-color:var(--accent); outline:3px solid #b84924
 .advanced { margin-top:16px; border-top:1px solid var(--line); padding-top:14px; }
 .advanced summary { cursor:pointer; color:#425148; font-size:.8rem; font-weight:800; }
 .advanced-grid { margin-top:14px; }
+.field-control { display:flex; align-items:center; gap:6px; }
+.field-reset { display:none; flex:0 0 auto; width:30px; height:30px; border-radius:50%; padding:0; background:#edf1eb; color:var(--ink); font-size:1rem; line-height:1; }
+.field-reset.visible { display:block; }
 .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:20px; }
 button { border:0; border-radius:9px; background:var(--accent); color:white; cursor:pointer; font:inherit; font-weight:750; padding:10px 13px; }
 button.secondary { background:#edf1eb; color:var(--ink); }

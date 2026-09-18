@@ -6,6 +6,7 @@ const planSize = document.querySelector('#plan-size');
 let plan;
 let updateTimer;
 let generation = 0;
+const storageKey = 'beer-benches-seating-settings-v1';
 
 function payload() {
   const data = Object.fromEntries(new FormData(form));
@@ -27,6 +28,25 @@ function updateNumberingOptions() {
     option.disabled = primaryIsHorizontal === secondaryIsHorizontal;
   }
   if (secondary.selectedOptions[0].disabled) secondary.value = primaryIsHorizontal ? 'top-to-bottom' : 'left-to-right';
+}
+
+function saveSettings() {
+  try { localStorage.setItem(storageKey, JSON.stringify(Object.fromEntries(new FormData(form)))); } catch (_) { /* Storage can be unavailable in private contexts. */ }
+}
+
+function restoreSettings() {
+  try {
+    const settings = JSON.parse(localStorage.getItem(storageKey));
+    if (!settings || typeof settings !== 'object') return;
+    for (const [name, value] of Object.entries(settings)) if (form.elements[name] && typeof value === 'string') form.elements[name].value = value;
+  } catch (_) { /* Ignore invalid or unavailable saved settings. */ }
+}
+
+function updateAdvancedResets() {
+  for (const button of form.querySelectorAll('.field-reset')) {
+    const field = form.elements[button.dataset.reset];
+    button.classList.toggle('visible', field.value !== field.defaultValue);
+  }
 }
 
 function render(data) {
@@ -80,10 +100,28 @@ function scheduleGenerate() {
 form.addEventListener('submit', async event => { event.preventDefault(); clearTimeout(updateTimer); try { await generate(); } catch (err) { error.textContent = err.message; } });
 for (const eventName of ['input', 'change']) form.addEventListener(eventName, event => {
   if (event.target.name === 'primary_numbering') updateNumberingOptions();
+  saveSettings();
+  updateAdvancedResets();
+  scheduleGenerate();
+});
+for (const button of form.querySelectorAll('.field-reset')) button.addEventListener('click', () => {
+  const field = form.elements[button.dataset.reset];
+  field.value = field.defaultValue;
+  saveSettings();
+  updateAdvancedResets();
+  scheduleGenerate();
+});
+document.querySelector('#reset').addEventListener('click', () => {
+  form.reset();
+  try { localStorage.removeItem(storageKey); } catch (_) { /* Storage can be unavailable in private contexts. */ }
+  updateNumberingOptions();
+  updateAdvancedResets();
   scheduleGenerate();
 });
 document.querySelector('#download').addEventListener('click', async () => {
   try { if (!plan) await generate(); const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(plan, null, 2)], { type:'application/json' })); link.download = 'beer-benches-seating.json'; link.click(); URL.revokeObjectURL(link.href); } catch (err) { error.textContent = err.message; }
 });
+restoreSettings();
 updateNumberingOptions();
+updateAdvancedResets();
 generate().catch(err => { error.textContent = err.message; });
