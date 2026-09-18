@@ -21,6 +21,8 @@ class SeatingConfig:
     table_name: str = "Tisch"
     seat_name: str = "Platz"
     margin: int = 40
+    primary_numbering: str = "left-to-right"
+    secondary_numbering: str = "top-to-bottom"
 
     def validate(self) -> None:
         if self.seats_per_table < 2 or self.seats_per_table % 2:
@@ -29,6 +31,16 @@ class SeatingConfig:
             raise ValueError("The layout needs at least one table in each direction.")
         if not self.gap_tables_x or not self.gap_tables_y:
             raise ValueError("Table gap patterns cannot be empty.")
+        directions = {
+            "left-to-right": "x",
+            "right-to-left": "x",
+            "top-to-bottom": "y",
+            "bottom-to-top": "y",
+        }
+        if self.primary_numbering not in directions or self.secondary_numbering not in directions:
+            raise ValueError("Table numbering directions are invalid.")
+        if directions[self.primary_numbering] == directions[self.secondary_numbering]:
+            raise ValueError("Primary and secondary table numbering directions must be perpendicular.")
         if any(value < 0 for value in asdict(self).values() if isinstance(value, int)):
             raise ValueError("Numeric values cannot be negative.")
 
@@ -48,10 +60,23 @@ def create_seat(config: SeatingConfig, table: int, number: int) -> dict:
     }
 
 
-def get_table_position(config: SeatingConfig, table: int) -> dict:
+def get_table_coordinates(config: SeatingConfig, table: int) -> tuple[int, int]:
     table_index = table - 1
-    table_index_x = table_index % config.num_tables_x
-    table_index_y = table_index // config.num_tables_x
+    primary_is_horizontal = config.primary_numbering in {"left-to-right", "right-to-left"}
+    primary_length = config.num_tables_x if primary_is_horizontal else config.num_tables_y
+    primary_index = table_index % primary_length
+    secondary_index = table_index // primary_length
+
+    if primary_is_horizontal:
+        table_index_x = primary_index if config.primary_numbering == "left-to-right" else config.num_tables_x - 1 - primary_index
+        table_index_y = secondary_index if config.secondary_numbering == "top-to-bottom" else config.num_tables_y - 1 - secondary_index
+    else:
+        table_index_y = primary_index if config.primary_numbering == "top-to-bottom" else config.num_tables_y - 1 - primary_index
+        table_index_x = secondary_index if config.secondary_numbering == "left-to-right" else config.num_tables_x - 1 - secondary_index
+    return table_index_x, table_index_y
+
+
+def get_table_position(config: SeatingConfig, table_index_x: int, table_index_y: int) -> dict:
 
     x = config.gap_seats_x * 2 * table_index_x + config.margin + config.seat_radius
     x += sum(config.gap_tables_x[i % len(config.gap_tables_x)] for i in range(table_index_x))
@@ -63,7 +88,8 @@ def get_table_position(config: SeatingConfig, table: int) -> dict:
 
 
 def create_table(config: SeatingConfig, table: int) -> tuple[dict, dict]:
-    position = get_table_position(config, table)
+    table_index_x, table_index_y = get_table_coordinates(config, table)
+    position = get_table_position(config, table_index_x, table_index_y)
     seats = {
         "row_number": str(table),
         "row_number_position": "both",

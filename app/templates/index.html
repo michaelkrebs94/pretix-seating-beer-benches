@@ -21,15 +21,36 @@
           <label>Seats / table<input name="seats_per_table" type="number" min="2" step="2" value="8"></label>
           <label>Tables wide<input name="num_tables_x" type="number" min="1" value="8"></label>
           <label>Tables deep<input name="num_tables_y" type="number" min="1" value="15"></label>
-          <label>Seat spacing, across<input name="gap_seats_x" type="number" min="0" value="60"></label>
-          <label>Seat spacing, along<input name="gap_seats_y" type="number" min="0" value="25"></label>
-          <label>Seat radius<input name="seat_radius" type="number" min="0" value="10"></label>
-          <label>Table gap pattern, across<input name="gap_tables_x" value="20, 45"></label>
-          <label>Table gap pattern, deep<input name="gap_tables_y" value="5, 5, 5, 45"></label>
+          <label>Primary table numbering
+            <select name="primary_numbering">
+              <option value="left-to-right">Left → right</option>
+              <option value="right-to-left">Right → left</option>
+              <option value="top-to-bottom">Top → bottom</option>
+              <option value="bottom-to-top">Bottom → top</option>
+            </select>
+          </label>
+          <label>Secondary table numbering
+            <select name="secondary_numbering">
+              <option value="top-to-bottom">Top → bottom</option>
+              <option value="bottom-to-top">Bottom → top</option>
+              <option value="left-to-right">Left → right</option>
+              <option value="right-to-left">Right → left</option>
+            </select>
+          </label>
+          <label>Table gap pattern ↔<input name="gap_tables_x" value="20, 45"></label>
+          <label>Table gap pattern ↕<input name="gap_tables_y" value="5, 5, 5, 45"></label>
           <label>Table prefix<input name="table_name" value="Tisch"></label>
           <label>Seat prefix<input name="seat_name" value="Platz"></label>
-          <label>Plan margin<input name="margin" type="number" min="0" value="40"></label>
         </div>
+        <details class="advanced">
+          <summary>Advanced</summary>
+          <div class="grid advanced-grid">
+            <label>Seat spacing, across<input name="gap_seats_x" type="number" min="0" value="60"></label>
+            <label>Seat spacing, along<input name="gap_seats_y" type="number" min="0" value="25"></label>
+            <label>Seat radius<input name="seat_radius" type="number" min="0" value="10"></label>
+            <label>Plan margin<input name="margin" type="number" min="0" value="40"></label>
+          </div>
+        </details>
         <div class="actions">
           <button type="submit">Update preview</button>
           <button id="download" type="button" class="secondary">Download pretix JSON</button>

@@ -40,3 +40,39 @@ def test_api_rejects_odd_seat_count():
     response = client.post("/api/seating", json={"seats_per_table": 5})
 
     assert response.status_code == 422
+
+
+def test_table_numbering_can_run_right_to_left_then_top_to_bottom():
+    plan = create_seating(SeatingConfig(
+        num_tables_x=2,
+        num_tables_y=2,
+        primary_numbering="right-to-left",
+        secondary_numbering="top-to-bottom",
+    ))
+    positions = [row["position"] for row in plan["zones"][0]["rows"]]
+
+    assert positions[0]["x"] > positions[1]["x"]
+    assert positions[0]["y"] == positions[1]["y"]
+    assert positions[2]["y"] > positions[0]["y"]
+
+
+def test_table_numbering_can_run_top_to_bottom_then_right_to_left():
+    plan = create_seating(SeatingConfig(
+        num_tables_x=2,
+        num_tables_y=2,
+        primary_numbering="top-to-bottom",
+        secondary_numbering="right-to-left",
+    ))
+    positions = [row["position"] for row in plan["zones"][0]["rows"]]
+
+    assert positions[0]["y"] < positions[1]["y"]
+    assert positions[2]["x"] < positions[0]["x"]
+
+
+def test_api_rejects_parallel_table_numbering_directions():
+    response = client.post("/api/seating", json={
+        "primary_numbering": "left-to-right",
+        "secondary_numbering": "right-to-left",
+    })
+
+    assert response.status_code == 422

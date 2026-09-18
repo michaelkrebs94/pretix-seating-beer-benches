@@ -4,6 +4,8 @@ const error = document.querySelector('#error');
 const total = document.querySelector('#seat-total');
 const planSize = document.querySelector('#plan-size');
 let plan;
+let updateTimer;
+let generation = 0;
 
 function payload() {
   const data = Object.fromEntries(new FormData(form));
@@ -15,6 +17,17 @@ function payload() {
 }
 
 function seatCount(data) { return data.seats_per_table * data.num_tables_x * data.num_tables_y; }
+
+function updateNumberingOptions() {
+  const primary = form.elements.primary_numbering;
+  const secondary = form.elements.secondary_numbering;
+  const primaryIsHorizontal = ['left-to-right', 'right-to-left'].includes(primary.value);
+  for (const option of secondary.options) {
+    const secondaryIsHorizontal = ['left-to-right', 'right-to-left'].includes(option.value);
+    option.disabled = primaryIsHorizontal === secondaryIsHorizontal;
+  }
+  if (secondary.selectedOptions[0].disabled) secondary.value = primaryIsHorizontal ? 'top-to-bottom' : 'left-to-right';
+}
 
 function render(data) {
   const zone = data.zones[0];
@@ -48,17 +61,29 @@ function render(data) {
 }
 
 async function generate() {
+  const request = ++generation;
   error.textContent = '';
   const data = payload();
   total.textContent = `${seatCount(data).toLocaleString()} seats`;
   const response = await fetch('/api/seating', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  if (request !== generation) return;
   if (!response.ok) throw new Error((await response.json()).detail || 'The plan could not be generated.');
   plan = await response.json();
   render(plan);
 }
 
-form.addEventListener('submit', async event => { event.preventDefault(); try { await generate(); } catch (err) { error.textContent = err.message; } });
+function scheduleGenerate() {
+  clearTimeout(updateTimer);
+  updateTimer = setTimeout(() => generate().catch(err => { error.textContent = err.message; }), 180);
+}
+
+form.addEventListener('submit', async event => { event.preventDefault(); clearTimeout(updateTimer); try { await generate(); } catch (err) { error.textContent = err.message; } });
+for (const eventName of ['input', 'change']) form.addEventListener(eventName, event => {
+  if (event.target.name === 'primary_numbering') updateNumberingOptions();
+  scheduleGenerate();
+});
 document.querySelector('#download').addEventListener('click', async () => {
   try { if (!plan) await generate(); const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(plan, null, 2)], { type:'application/json' })); link.download = 'beer-benches-seating.json'; link.click(); URL.revokeObjectURL(link.href); } catch (err) { error.textContent = err.message; }
 });
+updateNumberingOptions();
 generate().catch(err => { error.textContent = err.message; });
