@@ -1,0 +1,45 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+pytest:
+  stage: test
+  image: python:3.13-slim
+  script:
+    - pip install --no-cache-dir -r requirements-dev.txt
+    - pytest -q
+
+build_image:
+  stage: build
+  image: docker:cli
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - docker build -t "$IMAGE_TAG" .
+    - docker push "$IMAGE_TAG"
+
+deploy_production:
+  stage: deploy
+  needs: [build_image]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  variables:
+    COMPOSE_PROJECT_NAME: beer-benches-seating
+  tags:
+    - appvm
+  environment:
+    name: production
+    url: https://beer-benches-seating.ml-events.eu
+  script:
+    - export APP_IMAGE="$IMAGE_TAG"
+    - export APP_HOST="beer-benches-seating.ml-events.eu"
+    - export ROUTER_NAME="beer-benches-seating"
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker compose -f "$CI_PROJECT_DIR/deploy/docker-compose.yml" up -d --remove-orphans
+    - curl --fail --show-error --retry 10 --retry-all-errors --retry-delay 2 https://beer-benches-seating.ml-events.eu/healthz
