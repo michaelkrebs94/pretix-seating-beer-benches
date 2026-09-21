@@ -110,10 +110,8 @@ def create_table(config: SeatingConfig, table: int) -> tuple[dict, dict]:
         "uuid": str(uuid4()),
         "position": table_position,
         "text": {
-            "position": {
-                "x": table_position["x"] + table_width / 2,
-                "y": table_position["y"] + table_height / 2,
-            },
+            # Pretix interprets text positions relative to this rectangle.
+            "position": {"x": table_width / 2, "y": table_height / 2},
             "color": "#333333",
             "text": str(table),
         },
