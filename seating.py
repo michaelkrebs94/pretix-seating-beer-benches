@@ -8,6 +8,9 @@ from pathlib import Path
 from uuid import uuid4
 
 
+DEFAULT_CATEGORY = "Default"
+
+
 @dataclass
 class SeatingConfig:
     seats_per_table: int = 8
@@ -55,7 +58,7 @@ def create_seat(config: SeatingConfig, table: int, number: int) -> dict:
             "x": config.gap_seats_x if is_even else 0,
             "y": (number - 1) // 2 * config.gap_seats_y,
         },
-        "category": "",
+        "category": DEFAULT_CATEGORY,
         "radius": config.seat_radius,
     }
 
@@ -131,7 +134,7 @@ def create_seating(config: SeatingConfig | None = None) -> dict:
 
     return {
         "name": "Beer benches",
-        "categories": [],
+        "categories": [{"name": DEFAULT_CATEGORY, "color": "#266a55"}],
         "zones": [{
             "name": "Main",
             "position": {"x": 0, "y": 0},
