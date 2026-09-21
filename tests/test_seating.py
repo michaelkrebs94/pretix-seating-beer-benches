@@ -18,8 +18,8 @@ def test_default_layout_has_expected_table_and_seat_count():
     assert {row["row_number_position"] for row in zone["rows"]} == {None}
     for area in zone["areas"]:
         assert area["text"]["position"] == {
-            "x": area["position"]["x"] + area["rectangle"]["width"] / 2,
-            "y": area["position"]["y"] + area["rectangle"]["height"] / 2,
+            "x": area["rectangle"]["width"] / 2,
+            "y": area["rectangle"]["height"] / 2,
         }
 
 
