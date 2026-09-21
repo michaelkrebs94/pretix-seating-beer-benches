@@ -15,6 +15,12 @@ def test_default_layout_has_expected_table_and_seat_count():
     assert len(zone["areas"]) == 6
     assert sum(len(row["seats"]) for row in zone["rows"]) == 48
     assert len({area["uuid"] for area in zone["areas"]}) == 6
+    assert {row["row_number_position"] for row in zone["rows"]} == {None}
+    for area in zone["areas"]:
+        assert area["text"]["position"] == {
+            "x": area["position"]["x"] + area["rectangle"]["width"] / 2,
+            "y": area["position"]["y"] + area["rectangle"]["height"] / 2,
+        }
 
 
 def test_generator_rejects_odd_seats_per_table():

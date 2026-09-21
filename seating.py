@@ -92,23 +92,32 @@ def create_table(config: SeatingConfig, table: int) -> tuple[dict, dict]:
     position = get_table_position(config, table_index_x, table_index_y)
     seats = {
         "row_number": str(table),
-        "row_number_position": "both",
+        # The table number is rendered on its bench area. Pretix otherwise
+        # duplicates it as a row label at both row ends, visibly offset.
+        "row_number_position": None,
         "uuid": str(uuid4()),
         "position": position,
         "seats": [create_seat(config, table, number) for number in range(1, config.seats_per_table + 1)],
     }
+    table_position = {"x": position["x"], "y": position["y"] - config.seat_radius}
+    table_width = config.gap_seats_x
+    table_height = config.gap_seats_y * (config.seats_per_table / 2 - 1) + config.seat_radius * 2
     rectangle = {
         "shape": "rectangle",
         "color": "#d7c29b",
         "border_color": "#6f4e37",
         "rotation": 0,
         "uuid": str(uuid4()),
-        "position": {"x": position["x"], "y": position["y"] - config.seat_radius},
-        "text": {"position": position, "color": "#333333", "text": str(table)},
-        "rectangle": {
-            "width": config.gap_seats_x,
-            "height": config.gap_seats_y * (config.seats_per_table / 2 - 1) + config.seat_radius * 2,
+        "position": table_position,
+        "text": {
+            "position": {
+                "x": table_position["x"] + table_width / 2,
+                "y": table_position["y"] + table_height / 2,
+            },
+            "color": "#333333",
+            "text": str(table),
         },
+        "rectangle": {"width": table_width, "height": table_height},
     }
     return seats, rectangle
 
