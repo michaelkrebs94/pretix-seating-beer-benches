@@ -15,6 +15,8 @@ def test_default_layout_has_expected_table_and_seat_count():
     assert len(zone["areas"]) == 6
     assert sum(len(row["seats"]) for row in zone["rows"]) == 48
     assert len({area["uuid"] for area in zone["areas"]}) == 6
+    assert plan["categories"] == [{"name": "Default", "color": "#266a55"}]
+    assert {seat["category"] for row in zone["rows"] for seat in row["seats"]} == {"Default"}
     assert {row["row_number_position"] for row in zone["rows"]} == {None}
     for area in zone["areas"]:
         assert area["text"]["position"] == {
